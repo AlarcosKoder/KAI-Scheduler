@@ -50,7 +50,8 @@ DOCKER_COMMAND=docker run --rm -w ${DOCKER_WORK_DIR} -v "${PWD}/:/local:z" -u $(
 
 ### Targets
 builder:
-	DOCKER_BUILDKIT=1 docker buildx build -f build/builder/Dockerfile --load -t builder:${GO_IMAGE_VERSION} .
+#	DOCKER_BUILDKIT=1 docker buildx build -f build/builder/Dockerfile --load -t builder:${GO_IMAGE_VERSION} .
+	docker build -f build/builder/Dockerfile -t builder:1.24.4-bullseye .
 .PHONY: builder
 
 docker-build-crd-upgrader:
@@ -58,5 +59,14 @@ docker-build-crd-upgrader:
 .PHONY: docker-build-crd-upgrader
 
 docker-build-generic:
-	DOCKER_BUILDKIT=1 docker buildx build ${DOCKER_BUILD_ADDITIONAL_ARGS} --build-arg SERVICE_NAME=${SERVICE_NAME} -f ${DOCKERFILE_PATH} -t ${DOCKER_IMAGE_NAME} ${DOCKER_BUILDX_ADDITIONAL_ARGS} --platform ${DOCKER_BUILD_PLATFORM} .
+#	DOCKER_BUILDKIT=1 docker buildx build ${DOCKER_BUILD_ADDITIONAL_ARGS} --build-arg SERVICE_NAME=${SERVICE_NAME} -f ${DOCKERFILE_PATH} -t ${DOCKER_IMAGE_NAME} ${DOCKER_BUILDX_ADDITIONAL_ARGS} --platform ${DOCKER_BUILD_PLATFORM} .
+#	docker build --target prod --build-arg SERVICE_NAME=$(SERVICE_NAME) -f $(DOCKERFILE_PATH) -t $(DOCKER_IMAGE_NAME) --platform $(DOCKER_BUILD_PLATFORM) .
+#	docker build --target prod --build-arg SERVICE_NAME=$(SERVICE_NAME) --build-arg TARGETARCH=$(ARCH) -f $(DOCKERFILE_PATH) -t $(DOCKER_IMAGE_NAME) --platform $(DOCKER_BUILD_PLATFORM) .
+	docker build $(DOCKER_BUILD_ADDITIONAL_ARGS) \
+	--build-arg SERVICE_NAME=$(SERVICE_NAME) \
+	--build-arg TARGETARCH=$(ARCH) \
+	-f $(DOCKERFILE_PATH) \
+	-t $(DOCKER_IMAGE_NAME) \
+	--platform $(DOCKER_BUILD_PLATFORM) .
+
 .PHONY: docker-build-generic
