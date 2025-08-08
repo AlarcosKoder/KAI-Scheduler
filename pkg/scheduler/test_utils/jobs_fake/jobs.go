@@ -106,6 +106,16 @@ func BuildJobInfo(
 		taskStatusIndex[taskInfo.Status][taskInfo.UID] = taskInfo
 	}
 
+	if subGroups == nil {
+		subGroups = map[string]*podgroup_info.SubGroupInfo{}
+	}
+	for _, taskInfo := range taskInfos {
+		if len(taskInfo.SubGroupName) > 0 {
+			subGroup := subGroups[taskInfo.SubGroupName]
+			subGroup.AssignTask(taskInfo)
+		}
+	}
+
 	result := &podgroup_info.PodGroupInfo{
 		UID:               uid,
 		Name:              name,
@@ -163,6 +173,7 @@ func generateTasks(job *TestJobBasic, jobAllocatedResource *resource_info.Resour
 		taskInfo := pod_info.NewTaskInfo(podOfTask)
 		taskInfo.Status = task.State
 		taskInfo.GPUGroups = gpuGroups
+		taskInfo.SubGroupName = task.SubGroupName
 		taskInfo.IsLegacyMIGtask = task.IsLegacyMigTask
 		taskInfos = append(taskInfos, taskInfo)
 
