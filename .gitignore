@@ -9,3 +9,4 @@ launch.json
 
 cmd/fairshare-simulator/fairshare-simulator
 cmd/snapshot-tool/snapshot-toolminikube-linux-amd64
+minikube-linux-amd64
