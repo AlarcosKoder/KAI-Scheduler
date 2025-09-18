@@ -16,7 +16,6 @@ import (
 	"github.com/NVIDIA/KAI-scheduler/pkg/scheduler/api/podgroup_info"
 	"github.com/NVIDIA/KAI-scheduler/pkg/scheduler/framework"
 	"github.com/NVIDIA/KAI-scheduler/pkg/scheduler/log"
-	"github.com/NVIDIA/KAI-scheduler/pkg/scheduler/scheduler_util"
 	scheduler_util "github.com/NVIDIA/KAI-scheduler/pkg/scheduler/scheduler_util"
 )
 
