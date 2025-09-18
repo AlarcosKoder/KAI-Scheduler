@@ -30,7 +30,7 @@ import (
 	"github.com/NVIDIA/KAI-scheduler/pkg/scheduler/framework"
 	"github.com/NVIDIA/KAI-scheduler/pkg/scheduler/log"
 	"github.com/NVIDIA/KAI-scheduler/pkg/scheduler/metrics"
-	scheduler_util "github.com/NVIDIA/KAI-scheduler/pkg/scheduler/scheduler_util"
+        scheduler_util "github.com/NVIDIA/KAI-scheduler/pkg/scheduler/scheduler_util"
 )
 
 type preemptAction struct {
@@ -158,7 +158,7 @@ func buildFilterFuncForPreempt(ssn *framework.Session, preemptor *podgroup_info.
             }
         }
 
-        if !hasPreemptibleTasks {
+        if !hasPreemptibleVictim {
             return false
         }
 
