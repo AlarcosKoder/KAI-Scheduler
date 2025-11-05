@@ -77,7 +77,8 @@ jobs:
       - name: Extract package version
         id: package_version
         run: |
-          PACKAGE_VERSION=0.0.0-$(git rev-parse --short HEAD)
+          GIT_REV=$(git rev-parse --short HEAD | sed 's/^0*//')
+          PACKAGE_VERSION=0.0.0-$GIT_REV
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
           echo $PACKAGE_VERSION
@@ -109,8 +110,6 @@ jobs:
           helm package ./deployments/kai-scheduler -d ./charts --app-version $PACKAGE_VERSION --version $PACKAGE_VERSION
           cp charts/kai-scheduler-$PACKAGE_VERSION.tgz images/
 
-
-
   e2e-tests:
     name: Run E2E Tests
     needs: [ build ]
@@ -129,17 +128,25 @@ jobs:
         uses: helm/kind-action@v1.10.0
         with:
           cluster_name: kind
-          version: v0.26.0
+          version: v0.30.0
           config: ./hack/e2e-kind-config.yaml
 
-      - name: Load docker images to kind
+      - name: Deploy image registry
+        run: |
+          kubectl apply -f ./hack/local_registry.yaml
+          kubectl wait --for=condition=available --timeout=60s deployment/registry -n kube-registry
+
+      - name: Load docker images to registry
         working-directory: images
         env:
           PACKAGE_VERSION: ${{ needs.build.outputs.package_version }}
         run: |
+          kubectl port-forward -n kube-registry deploy/registry 5000:5000 &
           docker load < docker_images.tgz
           for image in $(docker images --format '{{.Repository}}:{{.Tag}}' | grep $PACKAGE_VERSION); do
-            kind load docker-image $image --name kind
+            new_image=$(echo "$image" | sed -E 's|.*/([^/]+:[^/]+)$|localhost:5000/\1|')
+            docker tag $image $new_image
+            docker push $new_image
           done
 
       - name: Deploy fake gpu operator
@@ -152,7 +159,7 @@ jobs:
           PACKAGE_VERSION: ${{ needs.build.outputs.package_version }}
         run: |
           helm upgrade -i kai-scheduler ./images/kai-scheduler-$PACKAGE_VERSION.tgz -n kai-scheduler --create-namespace \
-            --set "global.gpuSharing=true" --debug --wait
+            --set "global.gpuSharing=true" --set "global.registry=localhost:30100" --debug --wait
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
@@ -160,8 +167,15 @@ jobs:
 
       - name: Install ginkgo
         run: |
-          go install github.com/onsi/ginkgo/v2/ginkgo@v2.19.0
+          go install github.com/onsi/ginkgo/v2/ginkgo@v2.23.4
+
+      - name: Delete images from disk
+        env:
+          PACKAGE_VERSION: ${{ needs.build.outputs.package_version }}
+        run: |
+          docker images --format '{{.Repository}}:{{.Tag}}' | grep $PACKAGE_VERSION | xargs docker rmi -f
+          rm -rf images
 
       - name: Run e2e tests
         run: |
-          ginkgo -r --keep-going --randomize-all --randomize-suites --trace -vv ./test/e2e/suites --label-filter '!autoscale', '!scale'
+          ginkgo -r --keep-going --randomize-all --randomize-suites --trace -vv --label-filter '!autoscale && !scale' ./test/e2e/suites

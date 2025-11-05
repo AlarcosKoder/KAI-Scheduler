@@ -36,11 +36,11 @@ func NewPodAccumulatedScenarioBuilder(
 
 	var scenario *solverscenario.ByNodeScenario = nil
 	recordedVictimsTasks := make(map[common_info.PodID]*pod_info.PodInfo)
-	tasksToAllocate := podgroup_info.GetTasksToAllocate(pendingJob, session.SubGroupOrderFn, session.TaskOrderFn, false)
+	tasksToAllocate := podgroup_info.GetTasksToAllocate(pendingJob, session.PodSetOrderFn, session.TaskOrderFn, false)
 	if len(tasksToAllocate) != 0 {
 		scenario = solverscenario.NewByNodeScenario(session, pendingJob, pendingJob, nil, recordedVictimsJobs)
 		for _, job := range recordedVictimsJobs {
-			for podId, podInfo := range job.PodInfos {
+			for podId, podInfo := range job.GetAllPodsMap() {
 				recordedVictimsTasks[podId] = podInfo
 			}
 		}
@@ -78,7 +78,7 @@ func (asb *PodAccumulatedScenarioBuilder) addNextPotentialVictims() bool {
 	nextVictimJob := asb.victimsJobsQueue.PopNextJob()
 
 	potentialVictimTasks, jobHasMoreTasks := podgroup_info.GetTasksToEvict(
-		nextVictimJob, asb.session.SubGroupOrderFn, asb.session.TaskOrderFn,
+		nextVictimJob, asb.session.PodSetOrderFn, asb.session.TaskOrderFn,
 	)
 
 	// --- Non-preemptible guard (pod-level) ---
@@ -95,7 +95,7 @@ func (asb *PodAccumulatedScenarioBuilder) addNextPotentialVictims() bool {
 			// we still want to evaluate the job again if there are tasks
 			// that are not recorded victims yet, like elastic jobs
 			var remainingTasks []*pod_info.PodInfo
-			for _, task := range nextVictimJob.PodInfos {
+			for _, task := range nextVictimJob.GetAllPodsMap() {
 				if _, ok := asb.recordedVictimsTasks[task.UID]; !ok {
 					remainingTasks = append(remainingTasks, task)
 				}
@@ -110,7 +110,7 @@ func (asb *PodAccumulatedScenarioBuilder) addNextPotentialVictims() bool {
 
 	if jobHasMoreTasks {
 		var remainingTasks []*pod_info.PodInfo
-		for _, task := range nextVictimJob.PodInfos {
+		for _, task := range nextVictimJob.GetAllPodsMap() {
 			if !slices.Contains(potentialVictimTasks, task) {
 				remainingTasks = append(remainingTasks, task)
 			}
