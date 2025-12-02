@@ -38,7 +38,7 @@ func InitOptions() *Options {
 	fs := pflag.CommandLine
 
 	fs.StringVar(&options.SchedulerName,
-		"scheduler-name", "kai-scheduler",
+		"scheduler-name", "lali-scheduler",
 		"The scheduler name the workloads are scheduled with")
 	fs.StringVar(&options.ResourceReservationNamespace,
 		"resource-reservation-namespace", "kai-resource-reservation",
@@ -74,7 +74,7 @@ func InitOptions() *Options {
 		"rate-limiter-max-delay", 60,
 		"Max delay in seconds for the ExponentialFailureRateLimiter")
 	fs.BoolVar(&options.EnableLeaderElection,
-		"leader-elect", false,
+		"leader-elect", true,
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
 	fs.StringVar(&options.MetricsAddr,

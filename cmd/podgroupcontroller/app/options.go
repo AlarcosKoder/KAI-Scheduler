@@ -25,7 +25,7 @@ func InitOptions() *Options {
 		"The address the metric endpoint binds to.")
 	flag.StringVar(&options.ProbeAddr, "health-probe-bind-address", ":8081",
 		"The address the probe endpoint binds to.")
-	flag.BoolVar(&options.EnableLeaderElection, "leader-elect", false,
+	flag.BoolVar(&options.EnableLeaderElection, "leader-elect", true,
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
 	flag.IntVar(&options.Qps, "qps", 50,
@@ -36,7 +36,7 @@ func InitOptions() *Options {
 		"Max concurrent reconciles")
 	flag.IntVar(&options.LogLevel, "log-level", 3,
 		"Log level")
-	flag.StringVar(&options.SchedulerName, "scheduler-name", "kai-scheduler",
+	flag.StringVar(&options.SchedulerName, "scheduler-name", "lali-scheduler",
 		"The name of the scheduler used to schedule pod groups")
 
 	return options

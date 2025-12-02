@@ -11,10 +11,10 @@ DOCKER_SOCK_PATH=/var/run/docker.sock
 DOCKERFILE_PATH=./Dockerfile
 CRD_UPGRADER_DOCKERFILE_PATH=./deployments/crds/crd-upgrader/Dockerfile
 
-DOCKER_TAG?=0.0.0
+DOCKER_TAG?=0.6
 VERSION?=${DOCKER_TAG}
 
-DOCKER_REPO_BASE?=registry/local/kai-scheduler
+DOCKER_REPO_BASE?=harbor.aimotive.com/lali-scheduler
 DOCKER_REPO_FULL?=${DOCKER_REPO_BASE}/${SERVICE_NAME}
 DOCKER_IMAGE_NAME?=${DOCKER_REPO_FULL}:${VERSION}
 DOCKER_BUILD_PLATFORM?=linux/${ARCH}

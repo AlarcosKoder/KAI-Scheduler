@@ -2,20 +2,25 @@
 # SPDX-License-Identifier: Apache-2.0
 
 global:
-  registry: registry/local/kai-scheduler
+  registry: harbor.aimotive.com/lali-scheduler
   securityContext: {}
   imagePullSecrets: []
   gpuSharing: false
   clusterAutoscaling: false
-  nodeSelector: {}
   affinity: {}
-  tolerations: []
+  tolerations:
+  - key: "node-role.kubernetes.io/control-plane"
+    operator: "Exists"
+    effect: "NoSchedule"
+#  nodeSelector:
+#    node-role.kubernetes.io/control-plane: ""
   namespaceLabelSelector: {}
   podLabelSelector: {}
   resourceReservation:
     namespace: kai-resource-reservation
     serviceAccount: kai-resource-reservation
     appLabel: kai-resource-reservation
+  leaderElection: true
 
 
 podgrouper:

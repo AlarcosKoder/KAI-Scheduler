@@ -26,7 +26,7 @@ type Options struct {
 }
 
 func (o *Options) AddFlags(fs *flag.FlagSet) {
-	fs.BoolVar(&o.EnableLeaderElection, "leader-elect", false, "Enable leader election for controller manager. Enabling this will ensure there is only one active controller manager.")
+	fs.BoolVar(&o.EnableLeaderElection, "leader-elect", true, "Enable leader election for controller manager. Enabling this will ensure there is only one active controller manager.")
 	fs.StringVar(&o.SchedulingQueueLabelKey, "queue-label-key", defaultSchedulingQueueLabelKey, "Scheduling queue label key name.")
 	fs.StringVar(&o.MetricsAddress, "metrics-listen-address", defaultMetricsAddress, "The address the metrics endpoint binds to.")
 	fs.StringVar(&o.MetricsNamespace, "metrics-namespace", constants.DefaultMetricsNamespace, "Metrics namespace.")

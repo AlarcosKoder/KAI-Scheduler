@@ -30,7 +30,7 @@ import (
 )
 
 const (
-	defaultSchedulerName               = "kai-scheduler"
+	defaultSchedulerName               = "lali-scheduler"
 	defaultResourceReservationAppLabel = "kai-resource-reservation"
 	defaultNamespace                   = "kai-scheduler"
 	defaultSchedulerPeriod             = time.Second
@@ -106,7 +106,7 @@ func (s *ServerOption) AddFlags(fs *pflag.FlagSet) {
 	fs.StringVar(&s.NodePoolLabelValue, "partition-label-value", "", "The label value by which to filter scheduling partition")
 	fs.StringVar(&s.SchedulerConf, "scheduler-conf", "", "The absolute path of scheduler configuration file")
 	fs.DurationVar(&s.SchedulePeriod, "schedule-period", defaultSchedulerPeriod, "The period between each scheduling cycle")
-	fs.BoolVar(&s.EnableLeaderElection, "leader-elect", false,
+	fs.BoolVar(&s.EnableLeaderElection, "leader-elect", true,
 		"Start a leader election client and gain leadership before "+
 			"executing the main loop. Enable this when running replicated kai-scheduler for high availability")
 	fs.BoolVar(&s.PrintVersion, "version", true, "Show version")

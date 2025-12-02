@@ -34,7 +34,7 @@ func (s *Options) AddFlags() {
 		"scale-adjust-namespace", "kai-scale-adjust",
 		"The namespace to use for the scaling pods, defaults to kai-scale-adjust")
 	flag.StringVar(&s.SchedulerName,
-		"scheduler-name", "kai-scheduler",
+		"scheduler-name", "lalii-scheduler",
 		"Scheduler name, defaults to kai-scheduler")
 	flag.StringVar(&s.ScalingPodAppLabel,
 		"scaling-pod-app-label", "scaling-pod",
