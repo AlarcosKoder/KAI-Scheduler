@@ -4,7 +4,6 @@
 package app
 
 import (
-	"github.com/NVIDIA/KAI-scheduler/pkg/common/constants"
 	"github.com/spf13/pflag"
 
 	utilfeature "k8s.io/apiserver/pkg/util/feature"
@@ -26,39 +25,38 @@ type Options struct {
 	EnableLeaderElection                 bool
 	MetricsAddr                          string
 	ProbeAddr                            string
+	WebhookPort                          int
 	FakeGPUNodes                         bool
 	GpuCdiEnabled                        bool
 	VolumeBindingTimeoutSeconds          int
-	RuntimeClassName                     string
+	GPUSharingEnabled                    bool
 }
 
-func InitOptions(fs *pflag.FlagSet) *Options {
+func InitOptions() *Options {
 	options := &Options{}
 
-	if fs == nil {
-		fs = pflag.CommandLine
-	}
+	fs := pflag.CommandLine
 
 	fs.StringVar(&options.SchedulerName,
-		"scheduler-name", constants.DefaultSchedulerName,
+		"scheduler-name", "lali-scheduler",
 		"The scheduler name the workloads are scheduled with")
 	fs.StringVar(&options.ResourceReservationNamespace,
-		"resource-reservation-namespace", constants.DefaultResourceReservationName,
+		"resource-reservation-namespace", "kai-resource-reservation",
 		"Namespace for resource reservation pods")
 	fs.StringVar(&options.ResourceReservationServiceAccount,
-		"resource-reservation-service-account", constants.DefaultResourceReservationName,
+		"resource-reservation-service-account", "kai-resource-reservation",
 		"Service account name for resource reservation pods")
 	fs.StringVar(&options.ResourceReservationPodImage,
 		"resource-reservation-pod-image", "registry/local/kai-scheduler/resource-reservation",
 		"Container image for the resource reservation pod")
 	fs.StringVar(&options.ResourceReservationAppLabel,
-		"resource-reservation-app-label", constants.DefaultResourceReservationName,
+		"resource-reservation-app-label", "kai-resource-reservation",
 		"App label value of resource reservation pods")
 	fs.IntVar(&options.ResourceReservationAllocationTimeout,
 		"resource-reservation-allocation-timeout", 40,
 		"Resource reservation allocation timeout in seconds")
 	fs.StringVar(&options.ScalingPodNamespace,
-		"scale-adjust-namespace", constants.DefaultScaleAdjustName,
+		"scale-adjust-namespace", "kai-scale-adjust",
 		"Scaling pods namespace")
 	fs.Float64Var(&options.QPS,
 		"qps", 50,
@@ -76,7 +74,7 @@ func InitOptions(fs *pflag.FlagSet) *Options {
 		"rate-limiter-max-delay", 60,
 		"Max delay in seconds for the ExponentialFailureRateLimiter")
 	fs.BoolVar(&options.EnableLeaderElection,
-		"leader-elect", false,
+		"leader-elect", true,
 		"Enable leader election for controller manager. "+
 			"Enabling this will ensure there is only one active controller manager.")
 	fs.StringVar(&options.MetricsAddr,
@@ -85,6 +83,9 @@ func InitOptions(fs *pflag.FlagSet) *Options {
 	fs.StringVar(&options.ProbeAddr,
 		"health-probe-bind-address", ":8081",
 		"The address the probe endpoint binds to.")
+	fs.IntVar(&options.WebhookPort,
+		"webhook-addr", 9443,
+		"The port the webhook binds to.")
 	fs.BoolVar(&options.FakeGPUNodes,
 		"fake-gpu-nodes", false,
 		"Enables running fractions on fake gpu nodes for testing")
@@ -94,9 +95,9 @@ func InitOptions(fs *pflag.FlagSet) *Options {
 	fs.IntVar(&options.VolumeBindingTimeoutSeconds,
 		"volume-binding-timeout-seconds", 120,
 		"Volume binding timeout in seconds")
-	fs.StringVar(&options.RuntimeClassName,
-		"runtime-class-name", "",
-		"Runtime class for reservation pods")
+	fs.BoolVar(&options.GPUSharingEnabled,
+		"gpu-sharing-enabled", false,
+		"Specifies if the GPU sharing is enabled")
 
 	utilfeature.DefaultMutableFeatureGate.AddFlag(fs)
 

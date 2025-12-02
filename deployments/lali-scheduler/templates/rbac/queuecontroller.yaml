@@ -4,18 +4,8 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: kai-podgroup-controller
+  name: queuecontroller
 rules:
-- apiGroups:
-  - ""
-  resources:
-  - nodes
-  - pods
-  - pods/status
-  verbs:
-  - get
-  - list
-  - watch
 - apiGroups:
   - coordination.k8s.io
   resources:
@@ -41,14 +31,6 @@ rules:
   - update
   - watch
 - apiGroups:
-  - scheduling.k8s.io
-  resources:
-  - priorityclasses
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
   - scheduling.run.ai
   resources:
   - podgroups
@@ -59,10 +41,35 @@ rules:
 - apiGroups:
   - scheduling.run.ai
   resources:
-  - podgroups/status
+  - queues
   verbs:
   - get
   - list
   - patch
   - update
   - watch
+- apiGroups:
+  - scheduling.run.ai
+  resources:
+  - queues/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - scheduling.run.ai
+  resources:
+  - queues/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - delete
+  - update

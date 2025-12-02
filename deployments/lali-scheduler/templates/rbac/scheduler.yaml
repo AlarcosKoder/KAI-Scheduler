@@ -4,18 +4,25 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: kai-operator
+  name: kai-scheduler
 rules:
 - apiGroups:
   - ""
   resources:
   - configmaps
-  - endpoints
+  - namespaces
+  - nodes
   - persistentvolumeclaims
-  - pods
-  - secrets
-  - serviceaccounts
-  - services
+  - persistentvolumes
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - events
+  - pods/status
   verbs:
   - create
   - delete
@@ -27,16 +34,29 @@ rules:
 - apiGroups:
   - ""
   resources:
-  - nodes
+  - pods
   verbs:
+  - delete
   - get
   - list
+  - patch
+  - update
   - watch
 - apiGroups:
-  - admissionregistration.k8s.io
+  - ""
   resources:
-  - mutatingwebhookconfigurations
-  - validatingwebhookconfigurations
+  - pods/finalizers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
   verbs:
   - create
   - delete
@@ -46,9 +66,9 @@ rules:
   - update
   - watch
 - apiGroups:
-  - apiextensions.k8s.io
+  - ""
   resources:
-  - customresourcedefinitions
+  - configmaps
   verbs:
   - create
   - delete
@@ -58,10 +78,36 @@ rules:
   - update
   - watch
 - apiGroups:
-  - apps
+  - kueue.x-k8s.io
   resources:
-  - daemonsets
-  - deployments
+  - topologies
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - resource.k8s.io
+  resources:
+  - deviceclasses
+  - resourceclaims
+  - resourceslices
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - scheduling.k8s.io
+  resources:
+  - priorityclasses
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - scheduling.run.ai
+  resources:
+  - bindrequests
+  - podgroups/status
   verbs:
   - create
   - delete
@@ -71,54 +117,14 @@ rules:
   - update
   - watch
 - apiGroups:
-  - kai.scheduler
+  - scheduling.run.ai
   resources:
-  - configs
-  - schedulingshards
+  - podgroups
   verbs:
-  - create
-  - delete
   - get
   - list
   - patch
   - update
-  - watch
-- apiGroups:
-  - kai.scheduler
-  resources:
-  - configs/finalizers
-  - schedulingshards/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - kai.scheduler
-  resources:
-  - configs/status
-  - schedulingshards/status
-  verbs:
-  - get
-  - patch
-  - update
-- apiGroups:
-  - monitoring.coreos.com
-  resources:
-  - prometheuses
-  - servicemonitors
-  verbs:
-  - create
-  - delete
-  - get
-  - list
-  - patch
-  - update
-  - watch
-- apiGroups:
-  - nvidia.com
-  resources:
-  - clusterpolicies
-  verbs:
-  - get
-  - list
   - watch
 - apiGroups:
   - scheduling.run.ai
@@ -128,3 +134,25 @@ rules:
   - get
   - list
   - watch
+- apiGroups:
+  - storage.k8s.io
+  resources:
+  - csidrivers
+  - csinodes
+  - csistoragecapacities
+  - storageclasses
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - delete
+  - update
