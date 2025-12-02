@@ -27,7 +27,8 @@ podgrouper:
   image:
     name: podgrouper
     pullPolicy: IfNotPresent
-  additionalArgs: []
+  additionalArgs:
+  - "--leader-elect=true"
   resources:
     limits:
       cpu: "500m"
@@ -41,7 +42,8 @@ podgroupcontroller:
   image:
     name: podgroupcontroller
     pullPolicy: IfNotPresent
-  additionalArgs: []
+  additionalArgs:
+  - "--leader-elect=true"
   resources:
     limits:
       cpu: "500m"
@@ -58,7 +60,8 @@ binder:
   resourceReservationImage:
     name: resourcereservation
   certSecretName: binder-webhook-tls-secret
-  additionalArgs: []
+  additionalArgs:
+  - "--leader-elect=true"
   ports:
     webhookPort: 9443
     metricsPort: 8080
@@ -76,7 +79,8 @@ scheduler:
   image:
     name: scheduler
     pullPolicy: IfNotPresent
-  additionalArgs: []
+  additionalArgs:
+  - "--leader-elect=true"
   placementStrategy: binpack
   ports:
     metricsPort: 8080
@@ -106,7 +110,8 @@ nodescaleadjuster:
     pullPolicy: IfNotPresent
   scalingPodImage:
     name: scalingpod
-  additionalArgs: []
+  additionalArgs:
+  - "--leader-elect=true"
   resources:
     limits:
       cpu: "500m"
@@ -119,7 +124,8 @@ queuecontroller:
   image:
     name: queuecontroller
     pullPolicy: IfNotPresent
-  additionalArgs: []
+  additionalArgs:
+  - "--leader-elect=true"
   certSecretName: queuecontroller-webhook-tls-secret
   resources:
     limits:
